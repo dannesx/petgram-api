@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
+import { HTTPError } from '../utils/HTTPError'
 
 export function authenticateToken(
 	req: Request,
@@ -10,16 +11,15 @@ export function authenticateToken(
 	const token = authHeader && authHeader.split(' ')[1]
 
 	if (!token) {
-		return res.status(401).json({ error: true, message: 'Access denied' })
+		return next(new HTTPError("Access denied", 401))
 	}
 
 	jwt.verify(token, process.env.JWT_SECRET as string, (error, user) => {
 		if (error) {
-			return res.status(403).json({ error: true, message: 'Invalid token' })
+			return next(new HTTPError("Invalid token", 403))
 		}
 
 		(req as any).user = user
-		console.log(user)
 		next()
 	})
 }
