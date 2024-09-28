@@ -6,11 +6,12 @@ import {
 	getUsers,
 	updateUser,
 } from '../controllers/user'
+import { authenticateToken } from '../middlewares/auth'
 
 const router = Router()
 
 router.get('/', getUsers)
-router.get('/:username', getUserByUsername)
+router.get('/:username', authenticateToken, getUserByUsername)
 router.post('/', createUser)
 router.put('/:id', updateUser)
 router.delete('/:id', deleteUser)

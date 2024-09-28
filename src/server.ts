@@ -1,5 +1,11 @@
 import express, { Response } from 'express'
-import { commentRouter, likeRouter, postRouter, userRouter } from './routes'
+import {
+	authRouter,
+	commentRouter,
+	likeRouter,
+	postRouter,
+	userRouter,
+} from './routes'
 import { errorHandler } from './middlewares/errorHandler'
 
 const app = express()
@@ -11,6 +17,7 @@ app.use('/users', userRouter)
 app.use('/posts', postRouter)
 app.use('/comments', commentRouter)
 app.use('/likes', likeRouter)
+app.use('/auth', authRouter)
 
 app.use(errorHandler)
 

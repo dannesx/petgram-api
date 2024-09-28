@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import prisma from '../config/prisma'
-import { HTTPError } from '../utils/HttpError'
+import { HTTPError } from '../utils/HTTPError'
+import bcrypt from 'bcryptjs'
 
 const select = {
 	id: true,
@@ -47,12 +48,16 @@ export async function createUser(
 	try {
 		const { username, email, password } = req.body
 
+		const hashedPassword = await bcrypt.hash(password, 10)
+
 		if (!username || !email || !password) {
-			return next(new HTTPError('Username, email and password are required', 400))
+			return next(
+				new HTTPError('Username, email and password are required', 400)
+			)
 		}
 
 		const newUser = await prisma.user.create({
-			data: { username, email, password },
+			data: { username, email, password: hashedPassword },
 			select,
 		})
 
