@@ -28,9 +28,9 @@ model Post {
   imageUrl  String
   caption   String
   likeCount Int       @default(0)
+  userId    String
   user      User      @relation(fields: [userId], references: [id])
   comments  Comment[]
-  userId    String
   likes     Like[]
   createdAt DateTime  @default(now())
 
@@ -40,10 +40,10 @@ model Post {
 model Comment {
   id        String   @id @default(cuid())
   text      String
-  user      User     @relation(fields: [userId], references: [id])
-  post      Post     @relation(fields: [postId], references: [id])
   userId    String
   postId    String
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
   createdAt DateTime @default(now())
 
   @@map("comments")
@@ -51,10 +51,10 @@ model Comment {
 
 model Like {
   id     String @id @default(cuid())
-  user   User   @relation(fields: [userId], references: [id])
-  post   Post   @relation(fields: [postId], references: [id])
   userId String
   postId String
+  user   User   @relation(fields: [userId], references: [id])
+  post   Post   @relation(fields: [postId], references: [id])
 
   @@map("likes")
 }
