@@ -80,50 +80,6 @@ export async function createPost(
 	}
 }
 
-export async function likePost(
-	req: Request,
-	res: Response,
-	next: NextFunction
-) {
-	try {
-		const { id } = req.params
-		const userId = (req as any).user.id
-
-		const post = await prisma.post.findUnique({
-			where: { id },
-			select: { id: true },
-		})
-
-		if (!post) {
-			return next(new HTTPError(`Post ${id} not found`, 404))
-		}
-
-		const like = await prisma.like.findFirst({
-			where: { postId: id, userId },
-		})
-
-		if (like) {
-			await prisma.like.delete({ where: { id: like.id } })
-			await prisma.post.update({
-				where: { id },
-				data: { likeCount: { decrement: 1 } },
-			})
-		} else {
-			await prisma.like.create({
-				data: { postId: id, userId },
-			})
-			await prisma.post.update({
-				where: { id },
-				data: { likeCount: { increment: 1 } },
-			})
-		}
-
-		res.status(204).send()
-	} catch (error) {
-		next(error)
-	}
-}
-
 export async function updatePost(
 	req: Request,
 	res: Response,

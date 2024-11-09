@@ -1,11 +1,10 @@
 import { Router } from 'express'
+import { authenticateToken } from '../middlewares/auth'
+import { likePost, unlikePost } from '../controllers/like'
 
 const router = Router()
 
-router.get("/")
-router.get("/:id")
-router.post("/")
-router.put("/:id")
-router.delete("/:id")
+router.post('/:postId', authenticateToken, likePost)
+router.delete('/:postId', authenticateToken, unlikePost)
 
 export default router
