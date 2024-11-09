@@ -9,7 +9,7 @@ export async function likePost(
 ) {
 	try {
 		const { postId } = req.params
-		const { userId } = (req as any).user
+		const userId = (req as any).user.id
 
 		const post = await prisma.post.findUnique({
 			where: { id: postId },
@@ -18,6 +18,17 @@ export async function likePost(
 
 		if (!post) {
 			throw new HTTPError('Post not found', 404)
+		}
+
+		const like = await prisma.like.findFirst({
+			where: {
+				userId,
+				postId,
+			},
+		})
+
+		if (like) {
+			throw new HTTPError('You already liked this post', 400)
 		}
 
 		await prisma.like.create({
@@ -45,7 +56,7 @@ export async function unlikePost(
 ) {
 	try {
 		const { postId } = req.params
-		const { userId } = (req as any).user
+		const userId = (req as any).user.id
 
 		const post = await prisma.post.findUnique({
 			where: { id: postId },
@@ -56,6 +67,17 @@ export async function unlikePost(
 			throw new HTTPError('Post not found', 404)
 		}
 
+		const like = await prisma.like.findFirst({
+			where: {
+				userId,
+				postId,
+			},
+		})
+
+		if (!like) {
+			throw new HTTPError('You have not liked this post', 400)
+		}
+
 		await prisma.like.deleteMany({
 			where: {
 				userId,
@@ -63,7 +85,7 @@ export async function unlikePost(
 			},
 		})
 
-    const updatedPost = await prisma.post.update({
+		const updatedPost = await prisma.post.update({
 			where: { id: postId },
 			data: { likeCount: { decrement: 1 } },
 		})

@@ -9,8 +9,8 @@ export async function createComment(
 ) {
 	try {
 		const { postId } = req.params
-		const { userId } = (req as any).user
 		const { text } = req.body
+		const userId = (req as any).user.id
 
 		if (!text) {
 			throw new HTTPError('Text is required', 400)
@@ -44,71 +44,71 @@ export async function createComment(
 }
 
 export async function updateComment(
-  req: Request,
-  res: Response,
-  next: NextFunction
+	req: Request,
+	res: Response,
+	next: NextFunction
 ) {
-  try {
-    const { id } = req.params
-    const { userId } = (req as any).user
-    const { text } = req.body
+	try {
+		const { id } = req.params
+		const { text } = req.body
+		const userId = (req as any).user.id
 
-    if (!text) {
-      throw new HTTPError('Text is required', 400)
-    }
+		if (!text) {
+			throw new HTTPError('Text is required', 400)
+		}
 
-    const comment = await prisma.comment.findUnique({
-      where: { id },
-      select: { userId: true },
-    })
+		const comment = await prisma.comment.findUnique({
+			where: { id },
+			select: { userId: true },
+		})
 
-    if (!comment) {
-      throw new HTTPError('Comment not found', 404)
-    }
+		if (!comment) {
+			throw new HTTPError('Comment not found', 404)
+		}
 
-    if (userId !== comment.userId) {
-      throw new HTTPError('Unauthorized', 401)
-    }
+		if (userId !== comment.userId) {
+			throw new HTTPError('Unauthorized', 401)
+		}
 
-    const updatedComment = await prisma.comment.update({
-      where: { id },
-      data: { text },
-    })
+		const updatedComment = await prisma.comment.update({
+			where: { id },
+			data: { text },
+		})
 
-    res.json(updatedComment)
-  } catch (error) {
-    next(error)
-  }
+		res.json(updatedComment)
+	} catch (error) {
+		next(error)
+	}
 }
 
 export async function deleteComment(
-  req: Request,
-  res: Response,
-  next: NextFunction
+	req: Request,
+	res: Response,
+	next: NextFunction
 ) {
-  try {
-    const { userId } = (req as any).user
-    const { id } = req.params
+	try {
+		const { id } = req.params
+		const userId = (req as any).user.id
 
-    const comment = await prisma.comment.findUnique({
-      where: { id },
-      select: { userId: true },
-    })
+		const comment = await prisma.comment.findUnique({
+			where: { id },
+			select: { userId: true },
+		})
 
-    if (!comment) {
-      throw new HTTPError('Comment not found', 404)
-    }
+		if (!comment) {
+			throw new HTTPError('Comment not found', 404)
+		}
 
-    if (userId !== comment.userId) {
-      throw new HTTPError('Unauthorized', 401)
-    }
+		if (userId !== comment.userId) {
+			throw new HTTPError('Unauthorized', 401)
+		}
 
-    await prisma.comment.delete({
-      where: { id },
-    })
+		await prisma.comment.delete({
+			where: { id },
+		})
 
-    res.status(204).send()
-  } catch (error) {
-    next(error)
-  }
+		res.status(204).send()
+	} catch (error) {
+		next(error)
+	}
 }

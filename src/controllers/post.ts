@@ -56,6 +56,24 @@ export async function getPostById(
 	}
 }
 
+export async function getPostsByUsername(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {
+	try {
+		const { username } = req.params
+		const posts = await prisma.post.findMany({
+			where: { user: { username } },
+			select,
+		})
+
+		res.json(posts)
+	} catch (error) {
+		next(error)
+	}
+}
+
 export async function createPost(
 	req: Request,
 	res: Response,
