@@ -16,7 +16,7 @@ export function errorHandler(
 		switch (code) {
 			case 'P2002':
 				message = `Failed to create a new ${meta?.modelName}. This ${meta?.target} already exists`;
-				status = 400;
+				status = 409;
 				break;
 			case 'P2025':
 				message = `${meta?.modelName} not found. Failed to complete operation`;
