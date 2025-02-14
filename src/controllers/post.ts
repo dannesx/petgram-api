@@ -196,7 +196,7 @@ export async function likePost(
     if (!post) return next(new HTTPError("Post não encontrado", 404))
 
     const like = await prisma.like.findFirst({
-      where: { id, userId },
+      where: { postId: id, userId },
     })
 
     if (like) {
